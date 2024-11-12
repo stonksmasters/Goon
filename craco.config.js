@@ -15,6 +15,7 @@ module.exports = {
         util: require.resolve('util/'),
         process: require.resolve('process/browser.js'), // Include .js extension
         buffer: require.resolve('buffer'),
+        vm: require.resolve('vm-browserify'), // Add vm-browserify polyfill
       };
       webpackConfig.plugins = [
         ...webpackConfig.plugins,
