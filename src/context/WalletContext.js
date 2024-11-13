@@ -1,7 +1,14 @@
 // src/context/WalletContext.js
-import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
+
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+} from 'react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
-import { Connection } from '@solana/web3.js';
 import {
   WalletProvider as SolanaWalletProvider,
   useWallet,
@@ -12,15 +19,28 @@ import {
 } from '@solana/wallet-adapter-wallets';
 import '@solana/wallet-adapter-react-ui/styles.css';
 
-// Create WalletContext for managing wallet state and NFTs
-export const WalletContext = createContext();
+// -----------------------
+// 1. Create WalletContext
+// -----------------------
+const WalletContext = createContext({
+  nfts: [],
+  publicKey: null,
+  loading: false,
+  error: null,
+});
 
+// -----------------------
+// 2. Custom Hook
+// -----------------------
+export const useWalletContext = () => useContext(WalletContext);
+
+// -----------------------
+// 3. WalletContextProvider
+// -----------------------
 const WalletContextProvider = ({ children }) => {
-  const { publicKey } = useWallet();
-  const [nfts, setNfts] = useState([]);
-  const network = WalletAdapterNetwork.Devnet; // Set your desired network
-  const connection = useMemo(() => new Connection('https://api.devnet.solana.com'), []);
+  const network = WalletAdapterNetwork.Mainnet; // Use Mainnet for Magic Eden
 
+  // Initialize wallet adapters using useMemo for performance optimization
   const wallets = useMemo(
     () => [
       new PhantomWalletAdapter(),
@@ -29,43 +49,146 @@ const WalletContextProvider = ({ children }) => {
     [network]
   );
 
-  // Function to fetch NFTs based on the connected wallet
-  const fetchNFTs = useCallback(async (walletAddress) => {
-    try {
-      if (!walletAddress) return;
-      
-      const response = await fetch(`https://api-mainnet.magiceden.dev/v2/wallets/${walletAddress}/tokens?type=solana`);
-      const nftData = await response.json();
-      
-      // Extract NFT images and names to use in the StickerPanel
-      const fetchedNFTs = nftData.map(nft => ({
-        image: nft.metadata?.image,
-        name: nft.metadata?.name,
-      }));
-      
-      setNfts(fetchedNFTs);
-    } catch (error) {
-      console.error("Error fetching NFTs:", error);
-    }
-  }, []);
-
-  // Fetch NFTs when wallet connection changes
-  useEffect(() => {
-    if (publicKey) {
-      fetchNFTs(publicKey.toString());
-    }
-  }, [publicKey, fetchNFTs]);
-
   return (
-    <WalletContext.Provider value={{ nfts, publicKey }}>
-      <SolanaWalletProvider wallets={wallets} autoConnect>
-        {children}
-      </SolanaWalletProvider>
-    </WalletContext.Provider>
+    <SolanaWalletProvider wallets={wallets} autoConnect>
+      <WalletContextConsumer>{children}</WalletContextConsumer>
+    </SolanaWalletProvider>
   );
 };
 
-// Custom hook for consuming WalletContext
-export const useWalletContext = () => useContext(WalletContext);
+// -----------------------
+// 4. WalletContextConsumer
+// -----------------------
+const WalletContextConsumer = ({ children }) => {
+  const { publicKey, connected } = useWallet();
+  const [nfts, setNfts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // -----------------------
+  // 4.1. Helper Function: Transform IPFS URLs
+  // -----------------------
+  const transformImageURL = (url) => {
+    console.log('transformImageURL called with:', url); // Debug
+    if (!url) {
+      console.warn('Received empty URL for image.');
+      return '';
+    }
+    if (url.startsWith('ipfs://')) {
+      const transformedURL = `https://ipfs.io/ipfs/${url.substring(7)}`;
+      console.log('Transformed IPFS URL to HTTP:', transformedURL);
+      return transformedURL;
+    }
+    return url;
+  };
+
+  // -----------------------
+  // 4.2. Function to Fetch NFTs
+  // -----------------------
+  const fetchNFTs = useCallback(async (walletAddress) => {
+    console.log('=== NFT Fetch Initiated ===');
+    console.log('Wallet Address:', walletAddress);
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const apiUrl = `https://api-mainnet.magiceden.dev/v2/wallets/${walletAddress}/tokens?type=solana`;
+      console.log('Fetching NFTs from:', apiUrl);
+
+      const response = await fetch(apiUrl);
+
+      if (!response.ok) {
+        const errorMessage = `Magic Eden API Error: ${response.status} ${response.statusText}`;
+        console.error(errorMessage);
+        setError(errorMessage);
+        setNfts([]);
+        setLoading(false);
+        return;
+      }
+
+      const nftData = await response.json();
+      console.log('Raw NFT Data:', nftData);
+
+      if (!Array.isArray(nftData)) {
+        const errorMessage =
+          'Unexpected NFT data format received from Magic Eden API.';
+        console.error(errorMessage);
+        setError(errorMessage);
+        setNfts([]);
+        setLoading(false);
+        return;
+      }
+
+      // Transform NFT data to extract necessary fields
+      const fetchedNFTs = nftData.map((nft, index) => {
+        console.log(`Processing NFT ${index + 1}:`, nft);
+        // Access 'image' directly as it's present at the top level
+        let imageURL = nft.image;
+        let name = nft.name || `NFT #${index + 1}`;
+
+        console.log(`Original image URL: ${imageURL}`);
+
+        // Transform the image URL if it's an IPFS link
+        imageURL = transformImageURL(imageURL);
+        console.log(`Transformed image URL: ${imageURL}`);
+
+        if (!imageURL) {
+          console.warn(
+            `NFT ${index + 1} (${nft.mintAddress}) has no valid image URL.`
+          );
+        } else {
+          console.log(
+            `NFT ${index + 1} (${nft.mintAddress}):`,
+            { id: nft.mintAddress, image: imageURL, name },
+            '\n'
+          );
+        }
+
+        return {
+          id: nft.mintAddress || `nft-${index}`, // Unique identifier
+          image: imageURL || 'https://via.placeholder.com/150', // Fallback image URL
+          name: name,
+          // Add more properties if needed
+        };
+      });
+
+      console.log('Transformed NFT Data:', fetchedNFTs);
+      setNfts(fetchedNFTs);
+    } catch (err) {
+      console.error('Error during NFT fetching:', err);
+      setError('An error occurred while fetching NFTs.');
+      setNfts([]);
+    } finally {
+      setLoading(false);
+      console.log('=== NFT Fetch Completed ===');
+    }
+  }, []);
+
+  // -----------------------
+  // 4.3. useEffect to Fetch NFTs on Wallet Connection
+  // -----------------------
+  useEffect(() => {
+    if (connected && publicKey) {
+      const walletAddress = publicKey.toBase58();
+      console.log('Wallet connected:', walletAddress);
+      fetchNFTs(walletAddress);
+    } else {
+      console.log('Wallet disconnected or no publicKey.');
+      setNfts([]);
+      setError(null);
+      setLoading(false);
+    }
+  }, [connected, publicKey, fetchNFTs]);
+
+  // -----------------------
+  // 4.4. Provide Context Value
+  // -----------------------
+  return (
+    <WalletContext.Provider value={{ nfts, publicKey, loading, error }}>
+      {children}
+    </WalletContext.Provider>
+  );
+};
 
 export default WalletContextProvider;

@@ -6,12 +6,7 @@ import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import MemeGeneratorPage from './pages/MemeGeneratorPage';
 import HomePage from './pages/HomePage';
-import CouncilPage from './pages/CouncilPage';
-import FlashEventsPage from './pages/FlashEventsPage';
-import FeedPage from './pages/FeedPage';
-import ProfilePage from './pages/ProfilePage';
-import NotFoundPage from './pages/NotFoundPage';
-import './App.css'; // Include if you have global styles
+import './App.css'; // Import any global styles here
 
 function App() {
   return (
@@ -24,11 +19,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/meme-generator" element={<MemeGeneratorPage />} />
-                <Route path="/council" element={<CouncilPage />} />
-                <Route path="/flash-events" element={<FlashEventsPage />} />
-                <Route path="/feed" element={<FeedPage />} />
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="*" element={<NotFoundPage />} />
+                {/* Add other routes here as needed */}
               </Routes>
             </div>
           </main>

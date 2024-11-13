@@ -11,16 +11,15 @@ module.exports = {
         http: require.resolve('stream-http'),
         https: require.resolve('https-browserify'),
         zlib: require.resolve('browserify-zlib'),
-        url: require.resolve('url/'),
+        url: require.resolve('url'), // ensure `url` polyfill is specified here
         util: require.resolve('util/'),
-        process: require.resolve('process/browser.js'), // Include .js extension
+        process: require.resolve('process/browser.js'),
         buffer: require.resolve('buffer'),
-        vm: require.resolve('vm-browserify'), // Add vm-browserify polyfill
       };
       webpackConfig.plugins = [
         ...webpackConfig.plugins,
         new webpack.ProvidePlugin({
-          process: 'process/browser.js', // Include .js extension
+          process: 'process/browser.js',
           Buffer: ['buffer', 'Buffer'],
         }),
       ];

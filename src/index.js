@@ -4,10 +4,9 @@ import { createRoot } from 'react-dom/client';
 import App from './App';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { AppKitProvider } from './AppKitProvider';
 import WalletContextProvider from './context/WalletContext';
 import { AuthProvider } from './context/AuthContext';
-import './index.css'; // Ensure Tailwind CSS is imported
+import './index.css'; // Import Tailwind CSS or other global styles here
 
 const container = document.getElementById('root');
 const root = createRoot(container);
@@ -15,13 +14,11 @@ const root = createRoot(container);
 root.render(
   <React.StrictMode>
     <AuthProvider>
-      <AppKitProvider>
-        <WalletContextProvider>
-          <DndProvider backend={HTML5Backend}>
-            <App />
-          </DndProvider>
-        </WalletContextProvider>
-      </AppKitProvider>
+      <WalletContextProvider>
+        <DndProvider backend={HTML5Backend}>
+          <App />
+        </DndProvider>
+      </WalletContextProvider>
     </AuthProvider>
   </React.StrictMode>
 );

@@ -196,3 +196,10 @@ body {
 .sticker-panel img:hover {
   transform: scale(1.1);
 }
+.meme-canvas {
+  position: relative;
+  width: 800px;
+  height: 600px;
+  border: 2px dashed #ccc;
+  background-color: #f3f3f3;
+}

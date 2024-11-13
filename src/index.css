@@ -3,7 +3,11 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Reusable Button Styles */
+body {
+  @apply bg-gray-100 text-gray-900;
+}
+
+/* Custom Button Styles */
 .btn-primary {
   @apply px-4 py-2 bg-goonsGreen text-white rounded hover:bg-green-600 transition-colors duration-200;
 }
@@ -12,12 +16,7 @@
   @apply px-4 py-2 bg-goonsBlue text-white rounded hover:bg-blue-600 transition-colors duration-200;
 }
 
-/* Global Styles */
-body {
-  @apply bg-gray-100 text-gray-900;
-}
-
-/* Custom Animation */
+/* Fade-in Animation */
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -28,11 +27,5 @@ body {
 }
 
 .fade-in {
-  @apply animate-fade-in;
-}
-
-@layer utilities {
-  .animate-fade-in {
-    animation: fade-in 0.5s ease-in-out forwards;
-  }
+  animation: fade-in 0.5s ease-in-out forwards;
 }
