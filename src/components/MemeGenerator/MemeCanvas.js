@@ -105,25 +105,24 @@ const MemeCanvas = forwardRef((props, ref) => {
         const isPFP = category === 'Goons: 3D'; // Adjust based on category logic
 
         if (isPFP) {
-          // Calculate scaling factors to cover the canvas
+          // Scale the PFP sticker to fit within canvas bounds and make it selectable
           const scaleX = fabricCanvas.width / img.width;
           const scaleY = fabricCanvas.height / img.height;
-          const scale = Math.max(scaleX, scaleY); // Ensure the image covers the canvas
+          const scale = Math.max(scaleX, scaleY); 
 
           img.set({
             left: fabricCanvas.width / 2,
             top: fabricCanvas.height / 2,
             originX: 'center',
             originY: 'center',
-            selectable: false, // Make it a background image
+            selectable: true, // Allow selection and manipulation
           });
 
           img.scaleX = scale;
           img.scaleY = scale;
 
-          // Optionally, send the PFP image to the back
           fabricCanvas.add(img);
-          fabricCanvas.sendToBack(img);
+          fabricCanvas.setActiveObject(img); // Set as active object for immediate manipulation
         } else {
           // Default scaling for regular images
           img.set({
@@ -147,6 +146,7 @@ const MemeCanvas = forwardRef((props, ref) => {
       console.error('[MemeCanvas] Error loading image from URL:', error);
     }
   };
+
 
   const handleAddText = () => {
     const fabricCanvas = fabricCanvasRef.current;
