@@ -6,24 +6,22 @@ import { useWalletContext } from '../context/WalletContext';
 
 const MemeGeneratorPage = () => {
   const { nfts, publicKey, loading, error } = useWalletContext();
-  const memeCanvasRef = useRef(null); // Ref to access MemeCanvas methods
+  const memeCanvasRef = useRef(null);
 
-  // Log nfts to verify data structure
   useEffect(() => {
     console.log('NFTs loaded:', nfts);
   }, [nfts]);
 
-  // Function to handle sticker click and add it to the canvas
   const handleStickerClick = (imageURL, category) => {
     if (memeCanvasRef.current) {
-      memeCanvasRef.current.addSticker(imageURL, category); // Call addSticker function from MemeCanvas
+      memeCanvasRef.current.addSticker(imageURL, category);
     }
   };
 
   if (loading) {
     return (
       <div className="mt-20 text-center">
-        <p className="text-lg text-gray-700">Loading NFTs...</p>
+        <p className="text-lg text-grey-06">Loading NFTs...</p>
       </div>
     );
   }
@@ -39,7 +37,7 @@ const MemeGeneratorPage = () => {
   if (!publicKey) {
     return (
       <div className="mt-20 text-center">
-        <p className="text-lg text-gray-700">
+        <p className="text-lg text-grey-06">
           Please connect your wallet to use the Meme Generator.
         </p>
       </div>
@@ -47,16 +45,22 @@ const MemeGeneratorPage = () => {
   }
 
   return (
-    <main className="flex-1 p-4 bg-gray-100">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-center text-goonsBlue mb-8">Meme Generator</h1>
+    <main className="flex-grow p-8 bg-black-02">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-4xl font-extrabold text-center text-orange mb-10">
+          Meme Generator
+        </h1>
         
-        <div className="flex flex-col lg:flex-row lg:space-x-6 space-y-6 lg:space-y-0">
+        <div className="flex flex-col lg:flex-row items-center lg:items-start justify-center lg:justify-between space-y-8 lg:space-y-0 lg:space-x-8">
           {/* Sticker Panel */}
-          <StickerPanel stickers={nfts} onStickerClick={handleStickerClick} /> {/* Pass handleStickerClick */}
+          <div className="flex-shrink-0 w-full lg:w-1/3">
+            <StickerPanel stickers={nfts} onStickerClick={handleStickerClick} />
+          </div>
 
           {/* Meme Canvas */}
-          <MemeCanvas ref={memeCanvasRef} />
+          <div className="flex-shrink-0 w-full lg:w-2/3">
+            <MemeCanvas ref={memeCanvasRef} />
+          </div>
         </div>
       </div>
     </main>

@@ -282,12 +282,12 @@ const MemeCanvas = forwardRef((props, ref) => {
   }, []);
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-6 bg-white rounded-xl shadow-lg flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-6">
+    <div className="w-full max-w-6xl mx-auto p-6 bg-black-04 rounded-xl shadow-2xl flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-6">
       {/* Controls Section */}
       <div className="flex flex-col w-full md:w-1/3 space-y-6">
         {/* Text Input */}
         <div className="flex flex-col space-y-3">
-          <label htmlFor="textInput" className="text-lg font-medium text-gray-700">
+          <label htmlFor="textInput" className="text-lg font-semibold text-white">
             Add Text
           </label>
           <input
@@ -296,7 +296,7 @@ const MemeCanvas = forwardRef((props, ref) => {
             value={textInput}
             onChange={(e) => setTextInput(e.target.value)}
             placeholder="Enter text to add to canvas"
-            className="px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-4 py-3 border border-grey-04 rounded-md shadow-sm bg-grey-01 text-white placeholder-grey-05 focus:outline-none focus:ring-2 focus:ring-orange transition"
             aria-label="Enter text to add to canvas"
           />
         </div>
@@ -305,15 +305,15 @@ const MemeCanvas = forwardRef((props, ref) => {
         <div className="flex flex-col space-y-4">
           {/* Font Selection */}
           <div className="flex items-center space-x-3">
-            <PencilIcon className="h-5 w-5 text-gray-700" />
-            <label htmlFor="fontSelect" className="text-gray-700">
+            <PencilIcon className="h-5 w-5 text-grey-07" />
+            <label htmlFor="fontSelect" className="text-white">
               Font:
             </label>
             <select
               id="fontSelect"
               value={selectedFont}
               onChange={handleFontChange}
-              className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 block w-full py-2 px-3 border border-grey-04 bg-grey-02 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange focus:border-orange text-white"
               aria-label="Select font for text"
             >
               <option value="Arial">Arial</option>
@@ -321,14 +321,13 @@ const MemeCanvas = forwardRef((props, ref) => {
               <option value="Times New Roman">Times New Roman</option>
               <option value="Courier New">Courier New</option>
               <option value="Verdana">Verdana</option>
-              {/* Add more fonts as needed */}
             </select>
           </div>
 
           {/* Color Picker */}
           <div className="flex items-center space-x-3">
-            <ColorSwatchIcon className="h-5 w-5 text-gray-700" />
-            <label htmlFor="colorPicker" className="text-gray-700">
+            <ColorSwatchIcon className="h-5 w-5 text-grey-07" />
+            <label htmlFor="colorPicker" className="text-white">
               Text Color:
             </label>
             <input
@@ -336,7 +335,7 @@ const MemeCanvas = forwardRef((props, ref) => {
               type="color"
               value={selectedColor}
               onChange={handleColorChange}
-              className="mt-1 block w-10 h-10 p-0 border-0 rounded-md focus:ring-2 focus:ring-blue-500"
+              className="mt-1 block w-10 h-10 p-0 border-0 rounded-md focus:ring-2 focus:ring-orange"
               aria-label="Select color for text"
             />
           </div>
@@ -346,7 +345,7 @@ const MemeCanvas = forwardRef((props, ref) => {
         <div className="flex flex-col space-y-2">
           <button
             onClick={handleAddText}
-            className="flex items-center justify-center px-4 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex items-center justify-center px-4 py-3 bg-orange text-black-01 rounded-md hover:bg-opacity-90 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-orange"
             aria-label="Add text to canvas"
           >
             <PlusIcon className="h-5 w-5 mr-2" />
@@ -354,7 +353,7 @@ const MemeCanvas = forwardRef((props, ref) => {
           </button>
           <button
             onClick={handleDelete}
-            className="flex items-center justify-center px-4 py-3 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-red-500"
+            className="flex items-center justify-center px-4 py-3 bg-black-05 text-white rounded-md hover:bg-black-03 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-black-03"
             aria-label="Delete selected object"
           >
             <TrashIcon className="h-5 w-5 mr-2" />
@@ -362,7 +361,7 @@ const MemeCanvas = forwardRef((props, ref) => {
           </button>
           <button
             onClick={handleSave}
-            className="flex items-center justify-center px-4 py-3 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="flex items-center justify-center px-4 py-3 bg-grey-05 text-black-01 rounded-md hover:bg-grey-06 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-grey-06"
             aria-label="Save canvas as image"
           >
             <SaveIcon className="h-5 w-5 mr-2" />
@@ -375,8 +374,8 @@ const MemeCanvas = forwardRef((props, ref) => {
       <div className="flex-1 flex flex-col items-center">
         {/* Canvas Container */}
         <div
-          className={`relative border-4 rounded-lg p-2 bg-gray-50 transition-all duration-200 ${
-            isDragOver ? 'border-blue-500 bg-blue-50' : 'border-transparent'
+          className={`relative border-4 rounded-lg p-2 bg-grey-02 transition-all duration-200 ${
+            isDragOver ? 'border-orange bg-black-03' : 'border-transparent'
           }`}
           aria-label="Meme Canvas Drop Area"
         >
@@ -384,23 +383,24 @@ const MemeCanvas = forwardRef((props, ref) => {
           <div className="w-[300px] h-[300px] md:w-[450px] md:h-[450px] lg:w-[600px] lg:h-[600px] overflow-hidden">
             <canvas
               ref={canvasElementRef}
-              className="w-full h-full border-2 border-dashed border-blue-500 rounded-lg"
+              className="w-full h-full border-2 border-dashed border-orange rounded-lg"
               width={600}
               height={600}
             />
             {isDragOver && (
-              <div className="absolute inset-0 bg-blue-100 opacity-50 rounded-lg pointer-events-none flex items-center justify-center">
-                <span className="text-blue-700 font-semibold">Drop here to add image</span>
+              <div className="absolute inset-0 bg-orange bg-opacity-20 rounded-lg pointer-events-none flex items-center justify-center">
+                <span className="text-orange font-semibold">Drop here to add image</span>
               </div>
             )}
           </div>
         </div>
-        <p className="mt-2 text-sm text-gray-500 text-center">
+        <p className="mt-2 text-sm text-grey-06 text-center">
           Drag and drop images here or use the buttons to add text.
         </p>
       </div>
     </div>
   );
+
 });
 
 export default MemeCanvas;

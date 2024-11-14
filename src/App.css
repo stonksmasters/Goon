@@ -7,8 +7,8 @@
 
 body {
   font-family: 'Arial', sans-serif;
-  background-color: #f4f4f9;
-  color: #333;
+  background-color: var(--black-02);
+  color: var(--white);
 }
 
 /* Layout */
@@ -20,8 +20,8 @@ body {
 
 .header,
 .footer {
-  background-color: #282c34;
-  color: #fff;
+  background-color: var(--black-03);
+  color: var(--white);
   padding: 15px;
   text-align: center;
 }
@@ -45,21 +45,21 @@ body {
 }
 
 .btn-primary {
-  background-color: #007bff;
-  color: #fff;
+  background-color: var(--orange);
+  color: var(--black-01);
 }
 
 .btn-primary:hover {
-  background-color: #0056b3;
+  background-color: #85e600;
 }
 
 .btn-secondary {
-  background-color: #6c757d;
-  color: #fff;
+  background-color: var(--grey-04);
+  color: var(--white);
 }
 
 .btn-secondary:hover {
-  background-color: #5a6268;
+  background-color: var(--grey-03);
 }
 
 /* Navbar */
@@ -68,23 +68,23 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
-  background-color: #007bff;
-  color: #fff;
+  background-color: var(--black-03);
+  color: var(--white);
 }
 
 .navbar a {
-  color: #fff;
+  color: var(--white);
   text-decoration: none;
   margin: 0 10px;
 }
 
 .navbar a:hover {
-  color: #ccc;
+  color: var(--orange);
 }
 
 /* Card */
 .card {
-  background-color: #fff;
+  background-color: var(--black-04);
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
@@ -94,11 +94,11 @@ body {
 .card h3 {
   font-size: 1.5rem;
   margin-bottom: 10px;
-  color: #007bff;
+  color: var(--orange);
 }
 
 .card p {
-  color: #666;
+  color: var(--grey-06);
 }
 
 /* Form Styles */
@@ -117,7 +117,9 @@ body {
 .form-group textarea {
   width: 100%;
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--grey-04);
+  background-color: var(--grey-01);
+  color: var(--white);
   border-radius: 5px;
 }
 

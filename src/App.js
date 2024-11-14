@@ -6,20 +6,19 @@ import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import MemeGeneratorPage from './pages/MemeGeneratorPage';
 import HomePage from './pages/HomePage';
-import './App.css'; // Import any global styles here
+import './App.css'; // Import global styles here
 
 function App() {
   return (
     <WalletModalProvider>
       <Router>
-        <div className="flex flex-col min-h-screen">
+        <div className="flex flex-col min-h-screen bg-black-02 text-white">
           <Navbar />
-          <main className="flex-grow bg-gray-100">
-            <div className="container mx-auto p-4">
+          <main className="flex-grow bg-black-02">
+            <div className="max-w-7xl mx-auto p-8">
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/meme-generator" element={<MemeGeneratorPage />} />
-                {/* Add other routes here as needed */}
               </Routes>
             </div>
           </main>

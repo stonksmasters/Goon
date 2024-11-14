@@ -110,25 +110,25 @@ const StickerPanel = ({ stickers, onStickerClick }) => {
   };
 
   return (
-    <div className="w-full max-w-md p-4 bg-white shadow-xl rounded-lg mx-auto mb-6">
+    <div className="w-full max-w-4xl p-6 bg-black-05 shadow-2xl rounded-xl mx-auto mb-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row items-center justify-between mb-4">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-2 md:mb-0">Available Stickers</h2>
-        <div className="flex items-center space-x-2 w-full md:w-auto">
+      <div className="flex flex-col md:flex-row items-center justify-between mb-6">
+        <h2 className="text-3xl font-bold text-white mb-4 md:mb-0">Available Stickers</h2>
+        <div className="flex items-center space-x-4 w-full md:w-auto">
           <div className="relative w-full md:w-48">
             <input
               type="text"
               placeholder="Search stickers..."
               value={searchTerm}
               onChange={handleSearch}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-goonsBlue transition"
+              className="w-full pl-10 pr-4 py-2 border border-grey-04 rounded-md shadow-sm bg-grey-01 text-white placeholder-grey-05 focus:outline-none focus:ring-2 focus:ring-orange transition"
               aria-label="Search stickers"
             />
-            <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-grey-07 h-5 w-5" />
           </div>
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="text-goonsBlue p-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-goonsBlue"
+            className="text-orange p-2 rounded-md hover:bg-grey-03 focus:outline-none focus:ring-2 focus:ring-orange transition"
             aria-expanded={isOpen}
             aria-label={isOpen ? 'Collapse sticker panel' : 'Expand sticker panel'}
           >
@@ -142,16 +142,16 @@ const StickerPanel = ({ stickers, onStickerClick }) => {
       </div>
 
       {/* Category Tabs */}
-      <div className="hidden md:flex justify-center space-x-3 mb-4 overflow-x-auto">
+      <div className="flex justify-center space-x-3 mb-6 overflow-x-auto">
         {['All', 'PFP', 'Evopills', 'Goons Teddy', 'Stickers'].map((category) => (
           <button
             key={category}
             onClick={() => setActiveCategory(category)}
             className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
               activeCategory === category
-                ? 'bg-goonsBlue text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-goonsBlue`}
+                ? 'bg-orange text-black-01'
+                : 'bg-grey-04 text-grey-07 hover:bg-grey-03'
+            } focus:outline-none focus:ring-2 focus:ring-orange`}
           >
             {category}
           </button>
@@ -171,18 +171,18 @@ const StickerPanel = ({ stickers, onStickerClick }) => {
                     draggable
                     onDragStart={(e) => handleDragStart(e, sticker.image, category)}
                     onClick={() => handleStickerClick(sticker.image, category)}
-                    className="relative group bg-gray-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer"
+                    className="relative group bg-grey-01 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 cursor-pointer"
                   >
                     <img
                       src={sticker.image}
                       alt={sticker.name}
-                      className="w-full h-24 object-cover transform group-hover:scale-105 transition-transform duration-200"
+                      className="w-full h-24 object-cover transform group-hover:scale-105 transition-transform duration-300"
                       onError={(e) => {
                         console.error(`[StickerPanel] Failed to load image for sticker ID: ${sticker.id}`);
                         e.target.src = '/placeholder.png';
                       }}
                     />
-                    <p className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-xs text-white text-center py-1">
+                    <p className="absolute bottom-0 left-0 right-0 bg-black-03 text-xs text-white text-center py-1">
                       {sticker.name}
                     </p>
                   </div>
@@ -190,12 +190,13 @@ const StickerPanel = ({ stickers, onStickerClick }) => {
               })}
             </div>
           ) : (
-            <p className="text-gray-500 text-center">No stickers available.</p>
+            <p className="text-grey-06 text-center">No stickers available.</p>
           )}
         </div>
       )}
     </div>
   );
+
 };
 
 export default StickerPanel;

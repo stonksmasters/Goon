@@ -7,11 +7,20 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        goonsGreen: '#38A169',
-        goonsBlue: '#3182CE',
-        goonsRed: '#E53E3E',
-        goonsYellow: '#D69E2E', // Additional custom color
-        goonsGray: '#4A5568', // For secondary elements
+        'black-01': '#040404',
+        'black-02': '#050505',
+        'black-03': '#070707',
+        'black-04': '#111111',
+        'black-05': '#141414',
+        'grey-01': '#282828',
+        'grey-02': '#494949',
+        'grey-03': '#6a6a6a',
+        'grey-04': '#8b8b8b',
+        'grey-05': '#acacac',
+        'grey-06': '#cdcdcd',
+        'grey-07': '#cfcfcf',
+        'orange': '#97ff00',
+        'white': '#ffffff',
       },
       fontFamily: {
         sans: ['Inter', 'Arial', 'sans-serif'],
