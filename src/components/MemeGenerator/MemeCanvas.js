@@ -102,7 +102,6 @@ const MemeCanvas = forwardRef((props, ref) => {
         console.log('[MemeCanvas] Image object successfully created from URL:', imageURL);
 
         const fabricCanvas = fabricCanvasRef.current;
-
         const isPFP = category === 'Goons: 3D'; // Adjust based on category logic
 
         if (isPFP) {

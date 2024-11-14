@@ -17,13 +17,37 @@ const StickerPanel = ({ stickers, onStickerClick }) => {
   const [activeCategory, setActiveCategory] = useState('All');
   const [filteredStickers, setFilteredStickers] = useState(stickers);
 
+  // Array of hardcoded stickers
+  const hardcodedStickers = [
+    {
+      id: 'hardcoded-sticker-1',
+      name: 'Mug',
+      image: '/Mug.PNG', // Replace with actual image path
+      category: 'Stickers',
+    },
+    {
+      id: 'hardcoded-sticker-2',
+      name: 'GM',
+      image: '/GM.PNG', // Replace with actual image path
+      category: 'Stickers',
+    },
+    {
+      id: 'hardcoded-sticker-3',
+      name: 'GN',
+      image: 'GN.PNG', // Replace with actual image path
+      category: 'Stickers',
+    },
+    // Add more stickers as needed
+  ];
+
   useEffect(() => {
-    let filtered = [...stickers];
+    // Concatenate fetched stickers with hardcoded stickers
+    let allStickers = [...stickers, ...hardcodedStickers];
 
     // Filter by selected category
     if (activeCategory !== 'All') {
-      filtered = filtered.filter((sticker) => {
-        const category = sticker.name.split(" #")[0];
+      allStickers = allStickers.filter((sticker) => {
+        const category = sticker.category || sticker.name.split(" #")[0];
         switch (activeCategory) {
           case 'PFP':
             return category === 'Goons: 3D';
@@ -31,6 +55,8 @@ const StickerPanel = ({ stickers, onStickerClick }) => {
             return category === 'Evopill';
           case 'Goons Teddy':
             return category === 'Goons: Teddy Edition';
+          case 'Stickers':
+            return category === 'Stickers';
           default:
             return true;
         }
@@ -39,19 +65,19 @@ const StickerPanel = ({ stickers, onStickerClick }) => {
 
     // Filter by search term
     if (searchTerm.trim()) {
-      filtered = filtered.filter((sticker) =>
+      allStickers = allStickers.filter((sticker) =>
         sticker.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     // Sort stickers by the number after '#' in the name
-    filtered.sort((a, b) => {
+    allStickers.sort((a, b) => {
       const numA = parseInt(a.name.split("#")[1], 10);
       const numB = parseInt(b.name.split("#")[1], 10);
       return numA - numB;
     });
 
-    setFilteredStickers(filtered);
+    setFilteredStickers(allStickers);
   }, [stickers, searchTerm, activeCategory]);
 
   const handleSearch = (e) => setSearchTerm(e.target.value);
@@ -65,12 +91,8 @@ const StickerPanel = ({ stickers, onStickerClick }) => {
    * @param {string} category - The category of the sticker.
    */
   const handleDragStart = (e, imageURL, category) => {
-    // Pass the image URL as plain text for existing functionality
     e.dataTransfer.setData('text/plain', imageURL);
-
-    // Pass the category as a custom MIME type
     e.dataTransfer.setData('application/category', category);
-
     e.dataTransfer.effectAllowed = 'copy';
   };
 
@@ -121,7 +143,7 @@ const StickerPanel = ({ stickers, onStickerClick }) => {
 
       {/* Category Tabs */}
       <div className="hidden md:flex justify-center space-x-3 mb-4 overflow-x-auto">
-        {['All', 'PFP', 'Evopills', 'Goons Teddy'].map((category) => (
+        {['All', 'PFP', 'Evopills', 'Goons Teddy', 'Stickers'].map((category) => (
           <button
             key={category}
             onClick={() => setActiveCategory(category)}
@@ -142,9 +164,7 @@ const StickerPanel = ({ stickers, onStickerClick }) => {
           {filteredStickers.length > 0 ? (
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {filteredStickers.map((sticker) => {
-                // Extract the category from the sticker's name
-                const category = sticker.name.split(" #")[0];
-
+                const category = sticker.category || sticker.name.split(" #")[0];
                 return (
                   <div
                     key={sticker.id}
@@ -174,23 +194,6 @@ const StickerPanel = ({ stickers, onStickerClick }) => {
           )}
         </div>
       )}
-
-      {/* Mobile Category Tabs */}
-      <div className="md:hidden flex justify-center space-x-3 mt-4 overflow-x-auto">
-        {['All', 'PFP', 'Evopills', 'Goons Teddy'].map((category) => (
-          <button
-            key={category}
-            onClick={() => setActiveCategory(category)}
-            className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              activeCategory === category
-                ? 'bg-goonsBlue text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-goonsBlue`}
-          >
-            {category}
-          </button>
-        ))}
-      </div>
     </div>
   );
 };

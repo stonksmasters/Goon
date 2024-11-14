@@ -83,7 +83,7 @@ const WalletContextConsumer = ({ children }) => {
   };
 
   // -----------------------
-  // 4.2. Function to Fetch NFTs
+  // 4.2. Function to Fetch NFTs via Netlify Serverless Function
   // -----------------------
   const fetchNFTs = useCallback(async (walletAddress) => {
     console.log('=== NFT Fetch Initiated ===');
@@ -93,13 +93,13 @@ const WalletContextConsumer = ({ children }) => {
     setError(null);
 
     try {
-      const apiUrl = `https://api-mainnet.magiceden.dev/v2/wallets/${walletAddress}/tokens?type=solana`;
+      const apiUrl = `/.netlify/functions/fetchTokens?wallet=${walletAddress}`; // Updated to use Netlify serverless function
       console.log('Fetching NFTs from:', apiUrl);
 
       const response = await fetch(apiUrl);
 
       if (!response.ok) {
-        const errorMessage = `Magic Eden API Error: ${response.status} ${response.statusText}`;
+        const errorMessage = `Error: ${response.status} ${response.statusText}`;
         console.error(errorMessage);
         setError(errorMessage);
         setNfts([]);
@@ -112,7 +112,7 @@ const WalletContextConsumer = ({ children }) => {
 
       if (!Array.isArray(nftData)) {
         const errorMessage =
-          'Unexpected NFT data format received from Magic Eden API.';
+          'Unexpected NFT data format received from serverless function.';
         console.error(errorMessage);
         setError(errorMessage);
         setNfts([]);
@@ -123,7 +123,6 @@ const WalletContextConsumer = ({ children }) => {
       // Transform NFT data to extract necessary fields
       const fetchedNFTs = nftData.map((nft, index) => {
         console.log(`Processing NFT ${index + 1}:`, nft);
-        // Access 'image' directly as it's present at the top level
         let imageURL = nft.image;
         let name = nft.name || `NFT #${index + 1}`;
 
@@ -149,7 +148,6 @@ const WalletContextConsumer = ({ children }) => {
           id: nft.mintAddress || `nft-${index}`, // Unique identifier
           image: imageURL || 'https://via.placeholder.com/150', // Fallback image URL
           name: name,
-          // Add more properties if needed
         };
       });
 
