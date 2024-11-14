@@ -93,7 +93,11 @@ const WalletContextConsumer = ({ children }) => {
     setError(null);
 
     try {
-      const apiUrl = `/.netlify/functions/fetchTokens?wallet=${walletAddress}`; // Updated to use Netlify serverless function
+      const apiUrl =
+        process.env.NODE_ENV === 'development'
+          ? `http://localhost:8888/.netlify/functions/fetchTokens?wallet=${walletAddress}`
+          : `/.netlify/functions/fetchTokens?wallet=${walletAddress}`; // Uses local server in dev
+
       console.log('Fetching NFTs from:', apiUrl);
 
       const response = await fetch(apiUrl);
