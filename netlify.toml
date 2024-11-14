@@ -1,2 +1,15 @@
+# netlify.toml
+
+[build]
+  publish = "build"            # The directory to publish (set to your build output directory)
+  command = "npm run build"     # Build command
+
+# Optional: Configure development settings
+[dev]
+  framework = "#auto"           # Automatically detect framework if possible
+  port = 8888                   # Port to run the dev server on (default is 8888)
+  targetPort = 3000             # The port your app runs on locally, e.g., 3000
+
+# Define serverless functions directory
 [functions]
-directory = "netlify/functions"
+  directory = "netlify/functions"
