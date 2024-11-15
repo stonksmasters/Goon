@@ -352,19 +352,55 @@ const MemeCanvas = forwardRef((props, ref) => {
   // Function to save/export the canvas as an image
   const handleSave = () => {
     const fabricCanvas = fabricCanvasRef.current;
+  
     if (fabricCanvas) {
       console.log('[MemeCanvas] Saving canvas as image.');
-      const dataURL = fabricCanvas.toDataURL({
-        format: 'png',
-        quality: 1,
-      });
-      const link = document.createElement('a');
-      link.href = dataURL;
-      link.download = 'meme.png';
-      link.click();
-      console.log('[MemeCanvas] Canvas saved as meme.png.');
+  
+      try {
+        // Use toDataURL to get the image as a Data URL
+        const dataURL = fabricCanvas.toDataURL({
+          format: 'png',
+          quality: 1,
+        });
+  
+        // Convert the Data URL to a Blob
+        fetch(dataURL)
+          .then(res => res.blob())
+          .then(blob => {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'meme.png';
+  
+            // Detect if the device is mobile
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  
+            if (isMobile) {
+              // Open the image in a new tab for mobile devices
+              window.open(url, '_blank');
+              console.log('[MemeCanvas] Image opened in a new tab for manual saving on mobile.');
+            } else {
+              // Trigger the download for desktop
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              console.log('[MemeCanvas] Canvas saved as meme.png.');
+            }
+  
+            // Revoke the Blob URL after a short delay
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+          })
+          .catch(error => {
+            console.error('[MemeCanvas] Error while saving canvas:', error);
+            alert('Failed to download the image. This might be due to CORS restrictions on certain images.');
+          });
+      } catch (error) {
+        console.error('[MemeCanvas] Error with toDataURL:', error);
+        alert('Unable to export canvas. This is likely due to CORS issues with one or more images.');
+      }
     }
   };
+  
 
   // Function to handle font selection change
   const handleFontChange = (e) => {
