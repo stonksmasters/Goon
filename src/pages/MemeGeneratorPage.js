@@ -1,4 +1,5 @@
 // src/pages/MemeGeneratorPage.js
+
 import React, { useEffect, useRef } from 'react';
 import StickerPanel from '../components/MemeGenerator/StickerPanel';
 import MemeCanvas from '../components/MemeGenerator/MemeCanvas';
@@ -20,7 +21,7 @@ const MemeGeneratorPage = () => {
 
   if (loading) {
     return (
-      <div className="mt-20 text-center">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-black-02 text-white">
         <p className="text-lg text-grey-06">Loading NFTs...</p>
       </div>
     );
@@ -28,7 +29,7 @@ const MemeGeneratorPage = () => {
 
   if (error) {
     return (
-      <div className="mt-20 text-center">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-black-02 text-white">
         <p className="text-lg text-red-500">{error}</p>
       </div>
     );
@@ -36,7 +37,7 @@ const MemeGeneratorPage = () => {
 
   if (!publicKey) {
     return (
-      <div className="mt-20 text-center">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-black-02 text-white">
         <p className="text-lg text-grey-06">
           Please connect your wallet to use the Meme Generator.
         </p>
@@ -45,20 +46,21 @@ const MemeGeneratorPage = () => {
   }
 
   return (
-    <main className="flex-grow p-8 bg-black-02">
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-extrabold text-center text-orange mb-10">
+    <main className="flex-grow p-6 bg-black-02 text-white font-sans">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-4xl font-extrabold text-center mb-8">
           Meme Generator
         </h1>
-        
-        <div className="flex flex-col lg:flex-row items-center lg:items-start justify-center lg:justify-between space-y-8 lg:space-y-0 lg:space-x-8">
+
+        {/* Main Content */}
+        <div className="flex flex-col lg:flex-row lg:space-x-8">
           {/* Sticker Panel */}
-          <div className="flex-shrink-0 w-full lg:w-1/3">
+          <div className="w-full lg:w-1/3 mb-8 lg:mb-0">
             <StickerPanel stickers={nfts} onStickerClick={handleStickerClick} />
           </div>
 
           {/* Meme Canvas */}
-          <div className="flex-shrink-0 w-full lg:w-2/3">
+          <div className="w-full lg:w-2/3">
             <MemeCanvas ref={memeCanvasRef} />
           </div>
         </div>

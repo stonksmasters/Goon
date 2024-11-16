@@ -19,7 +19,7 @@ module.exports = {
         'grey-05': '#acacac',
         'grey-06': '#cdcdcd',
         'grey-07': '#cfcfcf',
-        'orange': '#97ff00',
+        'neon-green': '#97ff00',
         'white': '#ffffff',
       },
       fontFamily: {
