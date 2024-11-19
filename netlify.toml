@@ -1,5 +1,6 @@
 [build]
   functions = "./netlify/functions"
+  secrets_scan_omit_keys = ["REACT_APP_API_BASE_URL"]
 
 [[headers]]
   for = "/.netlify/functions/*"
