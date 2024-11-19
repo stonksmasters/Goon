@@ -1,29 +1,31 @@
-const fetch = require('node-fetch');
+const axios = require('axios');
 
 exports.handler = async (event) => {
-  const API_BASE_URL = process.env.API_BASE_URL; // Use Netlify environment variables
-  const path = event.path.replace('/.netlify/functions/apiProxy', '');
-  const url = `${API_BASE_URL}${path}`;
-
   try {
-    const response = await fetch(url, {
+    const { path } = event;
+    const backendUrl = `https://goonbackend.onrender.com${path.replace('/.netlify/functions/apiProxy', '')}`;
+    
+    // Make a request to the backend
+    const response = await axios({
       method: event.httpMethod,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: event.headers.authorization || '',
-      },
-      body: event.body,
+      url: backendUrl,
+      headers: { ...event.headers },
+      data: event.body,
     });
-    const data = await response.json();
+
     return {
       statusCode: response.status,
-      body: JSON.stringify(data),
+      body: JSON.stringify(response.data),
     };
   } catch (error) {
-    console.error('Error fetching data from API:', error);
+    console.error('Error in apiProxy:', error.message);
+
     return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'Failed to fetch data from API' }),
+      statusCode: error.response?.status || 500,
+      body: JSON.stringify({
+        message: 'Error in apiProxy',
+        details: error.message,
+      }),
     };
   }
 };
