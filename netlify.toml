@@ -9,6 +9,6 @@
     Access-Control-Allow-Headers = "Content-Type, Authorization"
 
 [[redirects]]
-  from = "/api/*"
+  from = "/.netlify/functions/apiProxy/*"
   to = "https://goonbackend.onrender.com/:splat"
   status = 200
