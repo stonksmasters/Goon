@@ -9,5 +9,5 @@
 
 [[redirects]]
   from = "/api/*"
-  to = "http://localhost:5000/:splat"
+  to = "https://goonbackend.onrender.com/:splat"
   status = 200

@@ -98,87 +98,8 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Latest News Section */}
-      <section className="mt-12">
-        <h2 className="text-3xl font-semibold text-goonsGreen mb-4 text-center">
-          Latest News
-        </h2>
-        {data?.latestNews?.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {data.latestNews.map((news, index) => (
-              <div key={index} className="p-6 bg-white rounded-lg shadow hover:shadow-md transition duration-300">
-                <h3 className="text-2xl font-bold text-goonsBlue">{news.title}</h3>
-                <p className="mt-2 text-gray-700">{news.description}</p>
-                <a
-                  href={news.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-goonsGreen hover:underline mt-4 inline-block font-semibold"
-                >
-                  Read More →
-                </a>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-gray-500 text-center">No news available at the moment.</p>
-        )}
-      </section>
-
-      {/* Upcoming Events Section */}
-      <section className="mt-12">
-        <h2 className="text-3xl font-semibold text-goonsGreen mb-4 text-center">
-          Upcoming Events
-        </h2>
-        {data?.upcomingEvents?.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {data.upcomingEvents.map((event, index) => (
-              <div key={index} className="p-6 bg-white rounded-lg shadow hover:shadow-md transition duration-300">
-                <h3 className="text-2xl font-bold text-goonsBlue">{event.title}</h3>
-                <p className="mt-2 text-gray-700">{event.description}</p>
-                <p className="mt-2 text-gray-600 font-semibold">
-                  <strong>Date:</strong> {new Date(event.date).toLocaleDateString()}
-                </p>
-                <a
-                  href={event.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-goonsGreen hover:underline mt-4 inline-block font-semibold"
-                >
-                  Event Details →
-                </a>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-gray-500 text-center">No upcoming events at the moment.</p>
-        )}
-      </section>
-
-      {/* Community Statistics Section */}
-      <section className="mt-12">
-        <h2 className="text-3xl font-semibold text-goonsGreen mb-4 text-center">
-          Community Statistics
-        </h2>
-        {data?.statistics ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-6 bg-white rounded-lg shadow text-center">
-              <p className="text-4xl font-bold text-goonsBlue">{data.statistics.totalMembers}</p>
-              <p className="mt-2 text-gray-700 font-semibold">Total Members</p>
-            </div>
-            <div className="p-6 bg-white rounded-lg shadow text-center">
-              <p className="text-4xl font-bold text-goonsBlue">{data.statistics.activeMemes}</p>
-              <p className="mt-2 text-gray-700 font-semibold">Active Memes</p>
-            </div>
-            <div className="p-6 bg-white rounded-lg shadow text-center">
-              <p className="text-4xl font-bold text-goonsBlue">{data.statistics.eventsHeld}</p>
-              <p className="mt-2 text-gray-700 font-semibold">Events Held</p>
-            </div>
-          </div>
-        ) : (
-          <p className="text-gray-500 text-center">No statistics available at the moment.</p>
-        )}
-      </section>
+      {/* Dynamic Content Sections */}
+      {renderDynamicSections(data)}
 
       {/* Call to Action Section */}
       <section className="mt-16 text-center">
@@ -196,5 +117,85 @@ const HomePage = () => {
     </div>
   );
 };
+
+// Helper function to render dynamic sections
+const renderDynamicSections = (data) => {
+  if (!data) return null;
+
+  const sections = [
+    {
+      title: 'Latest News',
+      items: data.latestNews || [],
+      emptyMessage: 'No news available at the moment.',
+      renderItem: (news) => (
+        <div key={news.title} className="p-6 bg-white rounded-lg shadow hover:shadow-md transition duration-300">
+          <h3 className="text-2xl font-bold text-goonsBlue">{news.title}</h3>
+          <p className="mt-2 text-gray-700">{news.description}</p>
+          <a
+            href={news.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-goonsGreen hover:underline mt-4 inline-block font-semibold"
+          >
+            Read More →
+          </a>
+        </div>
+      ),
+    },
+    {
+      title: 'Upcoming Events',
+      items: data.upcomingEvents || [],
+      emptyMessage: 'No upcoming events at the moment.',
+      renderItem: (event) => (
+        <div key={event.title} className="p-6 bg-white rounded-lg shadow hover:shadow-md transition duration-300">
+          <h3 className="text-2xl font-bold text-goonsBlue">{event.title}</h3>
+          <p className="mt-2 text-gray-700">{event.description}</p>
+          <p className="mt-2 text-gray-600 font-semibold">
+            <strong>Date:</strong> {new Date(event.date).toLocaleDateString()}
+          </p>
+          <a
+            href={event.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-goonsGreen hover:underline mt-4 inline-block font-semibold"
+          >
+            Event Details →
+          </a>
+        </div>
+      ),
+    },
+    {
+      title: 'Community Statistics',
+      items: data.statistics ? [data.statistics] : [],
+      emptyMessage: 'No statistics available at the moment.',
+      renderItem: (stats) => (
+        <div key="stats" className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <StatCard title="Total Members" value={stats.totalMembers} />
+          <StatCard title="Active Memes" value={stats.activeMemes} />
+          <StatCard title="Events Held" value={stats.eventsHeld} />
+        </div>
+      ),
+    },
+  ];
+
+  return sections.map((section, index) => (
+    <section className="mt-12" key={index}>
+      <h2 className="text-3xl font-semibold text-goonsGreen mb-4 text-center">{section.title}</h2>
+      {section.items.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">{section.items.map(section.renderItem)}</div>
+      ) : (
+        <p className="text-gray-500 text-center">{section.emptyMessage}</p>
+      )}
+    </section>
+  ));
+};
+
+// Simple component for stats
+const StatCard = ({ title, value }) => (
+  <div className="p-6 bg-white rounded-lg shadow text-center">
+    <p className="text-4xl font-bold text-goonsBlue">{value}</p>
+    <p className="mt-2 text-gray-700 font-semibold">{title}</p>
+  </div>
+);
 
 export default HomePage;

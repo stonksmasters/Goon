@@ -1,14 +1,16 @@
-// src/App.js
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import MemeGeneratorPage from './pages/MemeGeneratorPage';
 import HomePage from './pages/HomePage';
+import { useWalletContext } from './context/WalletContext';
 import './App.css'; // Import global styles here
 
-function App() {
+const App = () => {
+  const { publicKey } = useWalletContext();
+
   return (
     <WalletModalProvider>
       <Router>
@@ -18,7 +20,10 @@ function App() {
             <div className="max-w-7xl mx-auto p-8">
               <Routes>
                 <Route path="/" element={<HomePage />} />
-                <Route path="/meme-generator" element={<MemeGeneratorPage />} />
+                <Route
+                  path="/meme-generator"
+                  element={publicKey ? <MemeGeneratorPage /> : <Navigate to="/" />}
+                />
               </Routes>
             </div>
           </main>
@@ -27,6 +32,6 @@ function App() {
       </Router>
     </WalletModalProvider>
   );
-}
+};
 
 export default App;
