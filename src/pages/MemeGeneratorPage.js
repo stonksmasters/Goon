@@ -7,7 +7,7 @@ const MemeGeneratorPage = () => {
   const { nfts, publicKey, loading, error } = useWalletContext();
   const memeCanvasRef = useRef(null);
 
-  // Log NFTs on load
+  // Log NFTs on load (for debugging)
   useEffect(() => {
     if (nfts.length > 0) {
       console.log('NFTs loaded:', nfts);
@@ -17,11 +17,11 @@ const MemeGeneratorPage = () => {
   // Handle adding stickers to the meme canvas
   const handleStickerClick = (imageURL, category) => {
     if (memeCanvasRef.current) {
-      memeCanvasRef.current.addSticker(imageURL, category);
+      memeCanvasRef.current.addSticker(imageURL, category); // Pass stickers to the canvas
     }
   };
 
-  // Loading state
+  // Loading state (when fetching data)
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-black-02 text-white">
@@ -30,7 +30,7 @@ const MemeGeneratorPage = () => {
     );
   }
 
-  // Error state
+  // Error state (for any error in fetching data)
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-black-02 text-white">
@@ -56,7 +56,7 @@ const MemeGeneratorPage = () => {
     );
   }
 
-  // Main content
+  // Main content (when everything is good)
   return (
     <main className="flex-grow p-6 bg-black-02 text-white font-sans">
       <div className="max-w-7xl mx-auto">
