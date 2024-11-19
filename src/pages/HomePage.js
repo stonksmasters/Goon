@@ -3,7 +3,9 @@ import axios from 'axios';
 
 // Create a centralized Axios instance for API calls
 const api = axios.create({
-  baseURL: '/.netlify/functions/apiProxy', // Proxy API path set up for Netlify Functions
+  baseURL: process.env.NODE_ENV === 'production' 
+    ? '/.netlify/functions/apiProxy' 
+    : 'http://localhost:8888/.netlify/functions/apiProxy', // Change this to match your local setup
   headers: {
     'Content-Type': 'application/json',
   },
