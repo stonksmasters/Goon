@@ -15,7 +15,7 @@
 [[redirects]]
   # Redirect API calls to the backend server
   from = "/api/*"
-  to = "https://goonbackend.onrender.com/:splat"
+  to = "https://goonbackend.onrender.com/:splat"  # Ensure this points to the correct backend
   status = 200
   force = true
 
@@ -24,3 +24,9 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+[[redirects]]
+  from = "/apiProxy/*"
+  to = "/.netlify/functions/apiProxy/:splat"
+  status = 200
+  force = true

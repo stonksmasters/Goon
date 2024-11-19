@@ -3,9 +3,9 @@ import axios from 'axios';
 
 // Create a centralized Axios instance for API calls
 const api = axios.create({
-  baseURL: process.env.NODE_ENV === 'production' 
+  baseURL: process.env.NODE_ENV === 'production'
     ? '/.netlify/functions/apiProxy' 
-    : 'http://localhost:8888/.netlify/functions/apiProxy', // Change this to match your local setup
+    : 'http://localhost:8888/.netlify/functions/apiProxy', // Adjust for local dev
   headers: {
     'Content-Type': 'application/json',
   },
@@ -21,12 +21,21 @@ const HomePage = () => {
   const fetchHomeData = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/home');
+      const response = await api.get('/home'); // Ensure this matches the function route
       setData(response.data);
       setError(null); // Clear any previous errors
     } catch (err) {
       console.error('Error fetching home data:', err);
-      setError('Failed to load home page data. Please try again.');
+      if (err.response) {
+        console.error('Response error:', err.response);
+        setError(`Failed to load home page data. Status: ${err.response.status}, Message: ${err.response.data.message || err.response.statusText}`);
+      } else if (err.request) {
+        console.error('No response received:', err.request);
+        setError('Failed to load home page data. No response from server.');
+      } else {
+        console.error('Error setting up request:', err.message);
+        setError(`Error: ${err.message}`);
+      }
     } finally {
       setLoading(false);
     }
