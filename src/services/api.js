@@ -1,15 +1,14 @@
-// src/services/api.js
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api';
 
-const API = axios.create({
+const api = axios.create({
   baseURL: API_BASE_URL,
-  withCredentials: true, // If you need to send cookies
+  withCredentials: true, // Include credentials for cross-origin requests
 });
 
-// Add a request interceptor to include the token
-API.interceptors.request.use(
+// Request Interceptor: Adds token to headers
+api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -20,13 +19,12 @@ API.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Add a response interceptor to handle global errors
-API.interceptors.response.use(
+// Response Interceptor: Handles errors globally
+api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Handle unauthorized errors (e.g., token expired)
-    if (error.response && error.response.status === 401) {
-      // Optionally logout the user or redirect to login
+    if (error.response?.status === 401) {
+      console.warn('Unauthorized: Redirecting to login.');
       localStorage.removeItem('token');
       window.location.href = '/';
     }
@@ -34,4 +32,4 @@ API.interceptors.response.use(
   }
 );
 
-export default API;
+export default api;

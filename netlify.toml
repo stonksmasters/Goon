@@ -1,18 +1,13 @@
-# netlify.toml
-
 [build]
-  publish = "build"            # The directory to publish (set to your build output directory)
-  command = "npm run build"     # Build command
+  functions = "./netlify/functions"
 
-# Optional: Configure development settings
-[dev]
-  framework = "#auto"           # Automatically detect framework if possible
-  port = 8888                   # Port to run the dev server on (default is 8888)
-  targetPort = 3000             # The port your app runs on locally, e.g., 3000
+[[headers]]
+  for = "/.netlify/functions/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
 
-# Define serverless functions directory
-[functions]
-  directory = "netlify/functions"
-
-[context.production.environment]
-  REACT_APP_API_BASE_URL = "https://https://goonbackend.onrender.com/api"
+[[redirects]]
+  from = "/api/*"
+  to = "http://localhost:5000/:splat"
+  status = 200

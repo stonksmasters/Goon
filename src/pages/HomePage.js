@@ -1,32 +1,44 @@
-// src/pages/HomePage.js
 import React, { useState, useEffect } from 'react';
-import API from '../services/api';
+import axios from 'axios';
 
-/**
- * HomePage component for the Goons Community Meme Generator.
- * Explains features, NFT integration, and displays community stats, news, and events.
- */
+// Create a centralized Axios instance for API calls
+const api = axios.create({
+  baseURL: process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
 const HomePage = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [retry, setRetry] = useState(0);
 
+  // Fetch home page data from the server
   const fetchHomeData = async () => {
     try {
-      const response = await API.get('/home');
+      setLoading(true);
+      const response = await api.get('/home');
       setData(response.data);
-      setLoading(false);
+      setError(null); // Clear any previous errors
     } catch (err) {
       console.error('Error fetching home data:', err);
-      setError('Failed to load home page data.');
+      setError('Failed to load home page data. Please try again.');
+    } finally {
       setLoading(false);
     }
   };
 
+  // Refetch data when retry count changes
   useEffect(() => {
     fetchHomeData();
-  }, []);
+  }, [retry]);
 
+  // Retry function to re-fetch data
+  const handleRetry = () => setRetry((prev) => prev + 1);
+
+  // Loading state
   if (loading) {
     return (
       <div className="mt-20 text-center">
@@ -35,14 +47,22 @@ const HomePage = () => {
     );
   }
 
+  // Error state
   if (error) {
     return (
       <div className="mt-20 text-center">
         <p className="text-lg text-red-500">{error}</p>
+        <button
+          className="mt-4 px-4 py-2 bg-goonsGreen text-white font-semibold rounded-lg hover:bg-goonsGreen-dark transition duration-300"
+          onClick={handleRetry}
+        >
+          Retry
+        </button>
       </div>
     );
   }
 
+  // Main content
   return (
     <div className="mt-20 p-8">
       <header className="text-center">
@@ -65,7 +85,7 @@ const HomePage = () => {
               Connect Your Wallet & Start Creating
             </h3>
             <p className="text-gray-700">
-              Use our meme generator to create memes featuring your Solana NFTs. Just connect your wallet to access and use your NFTs as stickers in our drag-and-drop editor. Perfect for showcasing your collection in a fun and creative way!
+              Use our meme generator to create memes featuring your Solana NFTs. Just connect your wallet to access and use your NFTs as stickers in our drag-and-drop editor.
             </p>
           </div>
           <div className="flex-1 mt-8 md:mt-0">
@@ -83,7 +103,7 @@ const HomePage = () => {
         <h2 className="text-3xl font-semibold text-goonsGreen mb-4 text-center">
           Latest News
         </h2>
-        {data.latestNews && data.latestNews.length > 0 ? (
+        {data?.latestNews?.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {data.latestNews.map((news, index) => (
               <div key={index} className="p-6 bg-white rounded-lg shadow hover:shadow-md transition duration-300">
@@ -110,7 +130,7 @@ const HomePage = () => {
         <h2 className="text-3xl font-semibold text-goonsGreen mb-4 text-center">
           Upcoming Events
         </h2>
-        {data.upcomingEvents && data.upcomingEvents.length > 0 ? (
+        {data?.upcomingEvents?.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {data.upcomingEvents.map((event, index) => (
               <div key={index} className="p-6 bg-white rounded-lg shadow hover:shadow-md transition duration-300">
@@ -140,7 +160,7 @@ const HomePage = () => {
         <h2 className="text-3xl font-semibold text-goonsGreen mb-4 text-center">
           Community Statistics
         </h2>
-        {data.statistics ? (
+        {data?.statistics ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="p-6 bg-white rounded-lg shadow text-center">
               <p className="text-4xl font-bold text-goonsBlue">{data.statistics.totalMembers}</p>
