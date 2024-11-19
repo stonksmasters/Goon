@@ -6,6 +6,7 @@ exports.handler = async (event) => {
 
   // Validate the wallet address input
   if (!walletAddress) {
+    console.error('[fetchTokens] Missing wallet address parameter');
     return {
       statusCode: 400,
       headers: {
@@ -27,21 +28,38 @@ exports.handler = async (event) => {
 
     // Check for non-200 responses from the API
     if (!response.ok) {
-      console.error(`[fetchTokens] Error from Magic Eden API: ${response.statusText}`);
+      console.error(`[fetchTokens] Error from Magic Eden API: ${response.statusText} (Status: ${response.status})`);
       return {
         statusCode: response.status,
         headers: {
           'Access-Control-Allow-Origin': '*', // Ensure CORS is included even on errors
           'Access-Control-Allow-Headers': 'Content-Type',
         },
-        body: JSON.stringify({ error: `Magic Eden API error: ${response.statusText}` }),
+        body: JSON.stringify({
+          error: `Magic Eden API error: ${response.statusText}`,
+          status: response.status,
+        }),
       };
     }
 
     // Parse the JSON data
     const data = await response.json();
 
-    // Return the data with appropriate CORS headers
+    // Check if data exists and if tokens are found
+    if (!data || !data.length) {
+      console.warn(`[fetchTokens] No tokens found for wallet: ${walletAddress}`);
+      return {
+        statusCode: 404, // Not Found
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        },
+        body: JSON.stringify({ error: 'No tokens found for this wallet' }),
+      };
+    }
+
+    // Successfully return the token data with appropriate CORS headers
+    console.log(`[fetchTokens] Successfully fetched tokens for wallet: ${walletAddress}`);
     return {
       statusCode: 200,
       headers: {
