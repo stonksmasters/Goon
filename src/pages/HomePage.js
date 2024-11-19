@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // Create a centralized Axios instance for API calls
 const api = axios.create({
-  baseURL: '/.netlify/functions/apiProxy',
+  baseURL: '/.netlify/functions/apiProxy', // Proxy API path set up for Netlify Functions
   headers: {
     'Content-Type': 'application/json',
   },
@@ -137,7 +137,7 @@ const renderDynamicSections = (data) => {
             rel="noopener noreferrer"
             className="text-goonsGreen hover:underline mt-4 inline-block font-semibold"
           >
-            Read More →
+            Read More → 
           </a>
         </div>
       ),
@@ -159,7 +159,7 @@ const renderDynamicSections = (data) => {
             rel="noopener noreferrer"
             className="text-goonsGreen hover:underline mt-4 inline-block font-semibold"
           >
-            Event Details →
+            Event Details → 
           </a>
         </div>
       ),
