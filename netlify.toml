@@ -1,14 +1,26 @@
 [build]
+  # Specify the folder containing Netlify Functions
   functions = "./netlify/functions"
+
+  # Exclude sensitive environment variables from the secrets scan
   secrets_scan_omit_keys = ["REACT_APP_API_BASE_URL"]
 
 [[headers]]
+  # Allow cross-origin requests to Netlify Functions
   for = "/.netlify/functions/*"
   [headers.values]
     Access-Control-Allow-Origin = "*"
     Access-Control-Allow-Headers = "Content-Type, Authorization"
 
 [[redirects]]
+  # Redirect API calls to the backend server
   from = "/api/*"
   to = "https://goonbackend.onrender.com/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  # Handle frontend routing for single-page applications
+  from = "/*"
+  to = "/index.html"
   status = 200
