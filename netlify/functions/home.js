@@ -4,7 +4,7 @@ const fetch = require('node-fetch');
 exports.handler = async function(event, context) {
   try {
     // Make the request to your backend API
-    const response = await fetch('https://goonbackend-1.onrender.com/home'); // Ensure backend URL is correct
+    const response = await fetch('https://goonbackend-1.onrender.com'); // Ensure backend URL is correct
 
     if (!response.ok) {
       console.error('Failed to fetch data:', response.status);
