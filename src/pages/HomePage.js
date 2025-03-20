@@ -1,70 +1,76 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
-// Create a centralized Axios instance for API calls
+// Centralized Axios instance with timeout
 const api = axios.create({
-  baseURL: process.env.NODE_ENV === 'production'
-    ? '/.netlify/functions/apiProxy' 
-    : 'http://localhost:8888/.netlify/functions/apiProxy', // Adjust for local dev
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  baseURL: '/apiProxy', // Consistent for dev and prod
+  headers: { 'Content-Type': 'application/json' },
+  timeout: 10000, // 10-second timeout to handle Render cold starts
 });
 
 const HomePage = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [retry, setRetry] = useState(0);
+  const [retryCount, setRetryCount] = useState(0);
 
-  // Fetch home page data from the server
-  const fetchHomeData = async () => {
+  // Memoized fetch function
+  const fetchHomeData = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await api.get('/home'); // Ensure this matches the function route
+      setError(null);
+      const response = await api.get('/home');
       setData(response.data);
-      setError(null); // Clear any previous errors
     } catch (err) {
       console.error('Error fetching home data:', err);
+      let errorMessage = 'Failed to load home page data.';
       if (err.response) {
         console.error('Response error:', err.response);
-        setError(`Failed to load home page data. Status: ${err.response.status}, Message: ${err.response.data.message || err.response.statusText}`);
+        errorMessage = `Status: ${err.response.status}, Message: ${err.response.data?.message || err.response.statusText}`;
       } else if (err.request) {
         console.error('No response received:', err.request);
-        setError('Failed to load home page data. No response from server.');
+        errorMessage = 'No response from server. It might be waking up—try again!';
+      } else if (err.code === 'ECONNABORTED') {
+        console.error('Request timed out:', err.message);
+        errorMessage = 'Request timed out. Please try again.';
       } else {
         console.error('Error setting up request:', err.message);
-        setError(`Error: ${err.message}`);
+        errorMessage = err.message;
       }
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  // Refetch data when retry count changes
+  // Fetch data on mount and retry
   useEffect(() => {
     fetchHomeData();
-  }, [retry]);
+  }, [fetchHomeData, retryCount]);
 
-  // Retry function to re-fetch data
-  const handleRetry = () => setRetry((prev) => prev + 1);
+  // Retry handler
+  const handleRetry = () => setRetryCount((prev) => prev + 1);
 
-  // Loading state
+  // Loading state with spinner
   if (loading) {
     return (
-      <div className="mt-20 text-center">
-        <p className="text-lg text-gray-700">Loading...</p>
+      <div className="mt-20 flex justify-center items-center">
+        <svg className="animate-spin h-8 w-8 text-goonsGreen" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+        </svg>
+        <p className="ml-4 text-lg text-gray-700">Loading...</p>
       </div>
     );
   }
 
-  // Error state
+  // Error state with retry button
   if (error) {
     return (
       <div className="mt-20 text-center">
         <p className="text-lg text-red-500">{error}</p>
         <button
-          className="mt-4 px-4 py-2 bg-goonsGreen text-white font-semibold rounded-lg hover:bg-goonsGreen-dark transition duration-300"
+          className="mt-4 px-6 py-2 bg-goonsGreen text-white font-semibold rounded-lg hover:bg-goonsGreen-dark transition duration-300 focus:outline-none focus:ring-2 focus:ring-goonsGreen focus:ring-opacity-50"
           onClick={handleRetry}
         >
           Retry
@@ -75,13 +81,13 @@ const HomePage = () => {
 
   // Main content
   return (
-    <div className="mt-20 p-8">
+    <div className="mt-20 p-8 max-w-7xl mx-auto">
       <header className="text-center">
-        <h1 className="text-4xl font-extrabold text-goonsBlue">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-goonsBlue">
           Welcome to the Goons Meme Generator
         </h1>
         <p className="mt-4 text-lg text-gray-600">
-          Unleash your creativity by using your Solana NFTs as drag-and-drop stickers!
+          Unleash your creativity with Solana NFTs as drag-and-drop stickers!
         </p>
       </header>
 
@@ -93,17 +99,18 @@ const HomePage = () => {
         <div className="flex flex-col md:flex-row items-center md:space-x-8">
           <div className="flex-1 text-center md:text-left">
             <h3 className="text-2xl font-semibold text-goonsBlue mb-4">
-              Connect Your Wallet & Start Creating
+              Connect Your Wallet & Create
             </h3>
-            <p className="text-gray-700">
-              Use our meme generator to create memes featuring your Solana NFTs. Just connect your wallet to access and use your NFTs as stickers in our drag-and-drop editor.
+            <p className="text-gray-700 leading-relaxed">
+              Craft hilarious memes using your Solana NFTs. Connect your wallet, grab your stickers, and drag them into our editor to get started.
             </p>
           </div>
           <div className="flex-1 mt-8 md:mt-0">
             <img
-              src="/preview.png" // Replace with actual preview image
+              src="/preview.png" // Ensure this exists in public/
               alt="Meme Generator Preview"
-              className="rounded-lg shadow-lg w-full h-auto"
+              className="rounded-lg shadow-lg w-full h-auto object-cover"
+              onError={(e) => (e.target.src = '/fallback-image.png')} // Fallback if preview.png is missing
             />
           </div>
         </div>
@@ -114,13 +121,13 @@ const HomePage = () => {
 
       {/* Call to Action Section */}
       <section className="mt-16 text-center">
-        <h2 className="text-3xl font-semibold text-goonsBlue">Get Started with the Meme Generator!</h2>
+        <h2 className="text-3xl font-semibold text-goonsBlue">Start Meme-ing Now!</h2>
         <p className="mt-4 text-lg text-gray-700">
-          Connect your wallet, fetch your NFTs, and start creating memes today!
+          Connect your wallet, fetch your NFTs, and unleash your inner meme lord today!
         </p>
         <a
           href="/meme-generator"
-          className="mt-8 inline-block px-8 py-3 text-lg font-semibold text-white bg-goonsGreen rounded-lg shadow hover:bg-goonsGreen-dark transition duration-300"
+          className="mt-8 inline-block px-8 py-3 text-lg font-semibold text-white bg-goonsGreen rounded-lg shadow-lg hover:bg-goonsGreen-dark transition duration-300 focus:outline-none focus:ring-2 focus:ring-goonsGreen focus:ring-opacity-50"
         >
           Launch Meme Generator
         </a>
@@ -137,7 +144,7 @@ const renderDynamicSections = (data) => {
     {
       title: 'Latest News',
       items: data.latestNews || [],
-      emptyMessage: 'No news available at the moment.',
+      emptyMessage: 'No news available right now—check back soon!',
       renderItem: (news) => (
         <div key={news.title} className="p-6 bg-white rounded-lg shadow hover:shadow-md transition duration-300">
           <h3 className="text-2xl font-bold text-goonsBlue">{news.title}</h3>
@@ -148,7 +155,7 @@ const renderDynamicSections = (data) => {
             rel="noopener noreferrer"
             className="text-goonsGreen hover:underline mt-4 inline-block font-semibold"
           >
-            Read More → 
+            Read More →
           </a>
         </div>
       ),
@@ -156,13 +163,18 @@ const renderDynamicSections = (data) => {
     {
       title: 'Upcoming Events',
       items: data.upcomingEvents || [],
-      emptyMessage: 'No upcoming events at the moment.',
+      emptyMessage: 'No events scheduled—stay tuned!',
       renderItem: (event) => (
         <div key={event.title} className="p-6 bg-white rounded-lg shadow hover:shadow-md transition duration-300">
           <h3 className="text-2xl font-bold text-goonsBlue">{event.title}</h3>
           <p className="mt-2 text-gray-700">{event.description}</p>
           <p className="mt-2 text-gray-600 font-semibold">
-            <strong>Date:</strong> {new Date(event.date).toLocaleDateString()}
+            <strong>Date:</strong> {new Date(event.date).toLocaleDateString('en-US', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
           </p>
           <a
             href={event.link}
@@ -170,20 +182,20 @@ const renderDynamicSections = (data) => {
             rel="noopener noreferrer"
             className="text-goonsGreen hover:underline mt-4 inline-block font-semibold"
           >
-            Event Details → 
+            Event Details →
           </a>
         </div>
       ),
     },
     {
-      title: 'Community Statistics',
+      title: 'Community Stats',
       items: data.statistics ? [data.statistics] : [],
-      emptyMessage: 'No statistics available at the moment.',
+      emptyMessage: 'Stats coming soon!',
       renderItem: (stats) => (
         <div key="stats" className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <StatCard title="Total Members" value={stats.totalMembers} />
-          <StatCard title="Active Memes" value={stats.activeMemes} />
-          <StatCard title="Events Held" value={stats.eventsHeld} />
+          <StatCard title="Total Members" value={stats.totalMembers ?? 'N/A'} />
+          <StatCard title="Active Memes" value={stats.activeMemes ?? 'N/A'} />
+          <StatCard title="Events Held" value={stats.eventsHeld ?? 'N/A'} />
         </div>
       ),
     },
@@ -191,19 +203,19 @@ const renderDynamicSections = (data) => {
 
   return sections.map((section, index) => (
     <section className="mt-12" key={index}>
-      <h2 className="text-3xl font-semibold text-goonsGreen mb-4 text-center">{section.title}</h2>
+      <h2 className="text-3xl font-semibold text-goonsGreen mb-6 text-center">{section.title}</h2>
       {section.items.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">{section.items.map(section.renderItem)}</div>
       ) : (
-        <p className="text-gray-500 text-center">{section.emptyMessage}</p>
+        <p className="text-gray-500 text-center italic">{section.emptyMessage}</p>
       )}
     </section>
   ));
 };
 
-// Simple component for stats
+// StatCard component with fallback
 const StatCard = ({ title, value }) => (
-  <div className="p-6 bg-white rounded-lg shadow text-center">
+  <div className="p-6 bg-white rounded-lg shadow text-center transform hover:scale-105 transition duration-300">
     <p className="text-4xl font-bold text-goonsBlue">{value}</p>
     <p className="mt-2 text-gray-700 font-semibold">{title}</p>
   </div>
